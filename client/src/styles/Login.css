@@ -1,0 +1,40 @@
+/* client/src/styles/Login.css */
+
+body {
+  background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+  min-height: 100vh;
+}
+
+/* This is the <div> wrapper that you click on */
+.d-grid.mb-3 {
+  /* This is the fix. We set a max-width on this
+     container to control the image size. 
+     You can change 320px to 300px or 350px 
+     to make it smaller or larger. */
+  max-width: 320px;
+
+  /* This centers the div container */
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 12px;
+}
+
+/* This is the <img> tag itself */
+.continue-submit-icon {
+  /* This tells the image to be 100% wide *inside* its container (the div above) */
+  width: 100%; 
+
+  /* Add a pointer cursor to show it's clickable */
+  cursor: pointer; 
+  
+  /* Add a nice hover effect */
+  /* The images are already rounded, so we don't need border-radius */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.continue-submit-icon:hover {
+  /* Make it slightly "pop" on hover */
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
