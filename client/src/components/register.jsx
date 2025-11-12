@@ -1,14 +1,14 @@
+import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
 import { auth, db } from "./firebase";
 import { setDoc, doc } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { sendEmail } from '../helper/email';
+import { useNavigate } from "react-router-dom";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import { sendEmail } from "../helper/email";
 
-function Register() {
+export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fname, setFname] = useState("");
@@ -18,24 +18,32 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      const user = auth.currentUser;
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const user = result.user;
+
       if (user) {
         await setDoc(doc(db, "Users", user.uid), {
-          email: user.email,
-          firstName: fname,
-          lastName: lname,
+          email: user.email || "",
+          firstName: fname || "",
+          lastName: lname || "",
           photo: "",
           role: "User",
-          isEnabled: true
+          // New users are disabled until approved in the DB
+          isEnabled: false,
         });
-        sendEmail(user.email, (fname + " " + lname) );
+
+        // Notify admin (or send welcome) — only if email and name present
+        if (user.email) {
+          sendEmail(user.email, `${fname} ${lname}`.trim());
+        }
       }
+
       console.log("User Registered Successfully!!");
-      toast.success("User Registered Successfully!!", {
+      toast.success("Registration successful! Your account is pending admin approval.", {
         position: "bottom-center",
+        autoClose: 5000,
       });
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
       console.log(error.message);
       toast.error(error.message, {
@@ -51,7 +59,7 @@ function Register() {
         onSubmit={handleRegister}
         sx={{
           p: 4,
-          bgcolor: 'background.paper',
+          bgcolor: "background.paper",
           borderRadius: 1,
           boxShadow: 3,
           width: { sm: 350, md: 450 },
@@ -63,7 +71,7 @@ function Register() {
 
         <TextField
           required
-          id="outlined-required"
+          id="outlined-firstname"
           label="First Name"
           fullWidth
           margin="normal"
@@ -103,13 +111,15 @@ function Register() {
         />
 
         <div className="d-grid mb-3">
-          <button type="submit" className="btn btn-primary">Sign Up</button>
+          <button type="submit" className="btn btn-primary">
+            Sign Up
+          </button>
         </div>
 
-        <p className="text-center">Already registered? <a href="/login">Login Here</a></p>
+        <p className="text-center">
+          Already registered? <a href="/login">Login Here</a>
+        </p>
       </Box>
     </div>
   );
 }
-
-export default Register;
