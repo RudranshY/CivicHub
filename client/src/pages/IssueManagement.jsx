@@ -20,33 +20,30 @@ const IssueManagement = () => {
     useEffect(() => {
         fetchIssues();
         
-        // Initialize socket connection for real-time updates
-        socketService.connect();
+      //  socketService.connect();
         
         // Listen for real-time updates from other users/sessions
-        const handleIssueProgressUpdate = (updateData) => {
-            console.log('🔄 Received real-time issue update:', updateData);
+       // const handleIssueProgressUpdate = (updateData) => {
+        //    console.log('🔄 Received real-time issue update:', updateData);
             // Refresh issues list when someone else makes changes
-            fetchIssues();
-        };
+        //    fetchIssues(); };
         
-        const handleIssueDeleted = (deletedIssueId) => {
-            console.log('🗑️ Issue deleted by another user:', deletedIssueId);
+       // const handleIssueDeleted = (deletedIssueId) => {
+          //  console.log('🗑️ Issue deleted by another user:', deletedIssueId);
             // Refresh issues list when someone else deletes an issue
-            fetchIssues();
-        };
+        //    fetchIssues(); };
         
         // Register socket event listeners
-        socketService.onIssueProgressUpdate(handleIssueProgressUpdate);
-        socketService.onIssueDeleted(handleIssueDeleted);
+       // socketService.onIssueProgressUpdate(handleIssueProgressUpdate);
+        // socketService.onIssueDeleted(handleIssueDeleted);
         
         // Cleanup function
-        return () => {
-            socketService.off('issue_progress_updated', handleIssueProgressUpdate);
-            socketService.off('issue_deleted', handleIssueDeleted);
-            socketService.disconnect();
-        };
-    }, []);
+       // return () => {
+        //    socketService.off('issue_progress_updated', handleIssueProgressUpdate);
+          //  socketService.off('issue_deleted', handleIssueDeleted);
+          //  socketService.disconnect(); 
+          // };
+             }, []);
 
     const fetchIssues = async () => {
         try {
