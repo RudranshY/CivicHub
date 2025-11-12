@@ -1,19 +1,17 @@
-import React from "react";
 import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, db } from "./firebase";
 import { toast } from "react-toastify";
 import { setDoc, doc, getDoc } from "firebase/firestore";
-import githubIcon from "../assets/GithubIconLight.png";
+import githubIcon from "../assets/GithubIconLight.png"; // This import is correct
 import { useNavigate } from "react-router-dom";
 import { sendEmail } from "../helper/email";
-import { Button } from "@mui/material";
+// We are NO LONGER importing { Button } from '@mui/material'
 
-export default function SignInWithGithub() {
+function SignInWithGithub() {
   const navigate = useNavigate();
 
   const githubLogin = async () => {
     const provider = new GithubAuthProvider();
-
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -23,67 +21,52 @@ export default function SignInWithGithub() {
         const userDoc = await getDoc(userDocRef);
 
         if (!userDoc.exists()) {
-          // --- New user ---
+          // This is a NEW user
           await setDoc(userDocRef, {
-            email: user.email || "",
-            firstName: user.displayName || "",
+            email: user.email,
+            firstName: user.displayName,
             lastName: "",
-            photo: user.photoURL || "",
+            photo: user.photoURL,
             role: "User",
-            isEnabled: false, // Require admin approval
+            isEnabled: false, // Set to false, requires admin approval
           });
 
-          // Notify admin (email helper)
-          if (user.email && user.displayName) {
-            sendEmail(user.email, user.displayName);
-          }
+          // Send notification email to admin
+          sendEmail(user.email, user.displayName);
 
+          // Inform user they need approval
           toast.info("Registration successful! Your account is pending admin approval.", {
             position: "bottom-center",
             autoClose: 5000,
           });
 
-          await auth.signOut(); // Log out immediately
-          navigate("/login");
-          return; // stop here for new users
+          auth.signOut(); // Log them out immediately
+          navigate("/login"); // Send them to login page
+          return; // Stop the function here
         }
 
-        // --- Existing user ---
-        toast.success("User logged in Successfully", { position: "bottom-center" });
+        // This is an EXISTING user, let App.jsx handle the approval check
+        toast.success("User logged in Successfully", {
+          position: "bottom-center",
+        });
         navigate("/");
       }
     } catch (error) {
       console.error("Error during Github login:", error);
-      toast.error("Failed to login with Github", { position: "bottom-center" });
+      toast.error("Failed to login with Github", {
+        position: "bottom-center",
+      });
     }
   };
 
+  // --- REVERTED to the original <div> and <img> structure ---
   return (
-    <Button
-      variant="contained"
-      fullWidth
-      onClick={githubLogin}
-      sx={{
-        mt: 1,
-        mb: 1,
-        bgcolor: "#24292e",
-        color: "#ffffff",
-        textTransform: "none",
-        "&:hover": { bgcolor: "#333" },
-      }}
-      startIcon={
-        <img
-          src={githubIcon}
-          alt="Github"
-          style={{
-            width: 24,
-            height: 24,
-            filter: "brightness(0) invert(1)",
-          }}
-        />
-      }
-    >
-      Continue with Github
-    </Button>
+    <div className="continue-google d-flex align-items-center justify-content-center">
+      <div onClick={githubLogin} className="d-grid mb-3">
+        <img className="continue-submit-icon" src={githubIcon} alt="Continue with Github" />
+      </div>
+    </div>
   );
 }
+
+export default SignInWithGithub;

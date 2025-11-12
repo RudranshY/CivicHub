@@ -2,10 +2,10 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, db } from "./firebase";
 import { toast } from "react-toastify";
 import { setDoc, doc, getDoc } from "firebase/firestore";
-import googleIconLight from "../assets/GoogleIconLight.png";
+import googleIconLight from "../assets/GoogleIconLight.png"; // This import is correct
 import { useNavigate } from 'react-router-dom';
 import { sendEmail } from '../helper/email';
-import { Button } from '@mui/material'; // Using the Button component we fixed earlier
+// We are NO LONGER importing { Button } from '@mui/material'
 
 function SignInWithGoogle() {
   const navigate = useNavigate();
@@ -26,7 +26,6 @@ function SignInWithGoogle() {
             lastName: user.displayName.split(" ").slice(1).join(" "),
             photo: user.photoURL,
             role: "User",
-            // --- THE CHANGE ---
             isEnabled: false // Set to false, requires admin approval
           });
           // Send notification email to admin
@@ -54,24 +53,13 @@ function SignInWithGoogle() {
     }
   };
 
-  // Using the fixed MUI Button from our previous edits
+  // --- REVERTED to the original <div> and <img> structure ---
   return (
-    <Button
-      variant="outlined"
-      fullWidth
-      onClick={googleLogin}
-      sx={{ 
-        mt: 1, 
-        mb: 1, 
-        color: '#3c4043', 
-        borderColor: '#dadce0', 
-        textTransform: 'none', 
-        '&:hover': { bgcolor: '#f5f5f5' } 
-      }}
-      startIcon={<img src={googleIconLight} alt="Google" style={{ width: '24px', height: '24px' }} />}
-    >
-      Continue with Google
-    </Button>
+    <div className="continue-google d-flex align-items-center justify-content-center">
+      <div onClick={googleLogin} className="d-grid mb-3">
+        <img className="continue-submit-icon" src={googleIconLight} alt="Continue with Google" />
+      </div>
+    </div>
   );
 }
 
